@@ -1,16 +1,17 @@
-import { ChatOpenAI } from "@langchain/openai"
+import { ChatOpenAI } from "@langchain/openai";
 
-const model_name = process.env.MODEL_NAME as string
-const apiKey = process.env.MODEL_API_KEY 
+const modelName = process.env.MODEL_NAME;
+const apiKey = process.env.MODEL_API_KEY;
 
-if (!model_name && !apiKey) {
-  throw new Error("Missing model_name or api Key configuration.");
+if (!modelName || !apiKey) {
+  throw new Error("Missing MODEL_NAME or MODEL_API_KEY environment variables.");
 }
 
 const agent = new ChatOpenAI({
-  model: model_name,
-  temperature: 0,
+  modelName: modelName,
   apiKey: apiKey,
-})
+  temperature: 0,
+  maxRetries: 3,
+});
 
 export default agent;
