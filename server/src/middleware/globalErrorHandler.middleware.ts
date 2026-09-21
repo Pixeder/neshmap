@@ -1,28 +1,32 @@
 import { Request, Response, NextFunction } from 'express';
-import { AppError } from '../utils/structures/appError.js';
+import { AppError } from '../utils/appError.js';
+import { AppResponse } from '../utils/appResponse.js';
 
-export const globalErrorHandler = (
-  err: Error, 
-  req: Request, 
-  res: Response, 
+export const errorHandler = (
+  error: unknown,
+  req: Request,
+  res: Response,
   next: NextFunction
 ) => {
-  // If it's our AppError, use its status code. Otherwise, default to 500.
-  const statusCode = err instanceof AppError ? err.statusCode : 500;
-  const message = err.message || 'Internal Server Error';
+  console.error(error);
 
-  // Production vs Development response toggle
-  if (process.env.NODE_ENV === 'development') {
-    res.status(statusCode).json({
-      status: 'fail',
-      message,
-      stack: err.stack,
-    });
-  } else {
-    // Production: Don't leak internal programming bug details to users
-    res.status(statusCode).json({
-      status: 'fail',
-      message: err instanceof AppError ? message : 'Something went wrong!',
-    });
+  if (error instanceof AppError) {
+    return res
+      .status(error.statusCode)
+      .json(
+        AppResponse.error(
+          error.statusCode,
+          error.message
+        )
+      );
   }
+
+  return res
+    .status(500)
+    .json(
+      AppResponse.error(
+        500,
+        'Internal server error.'
+      )
+    );
 };

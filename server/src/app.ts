@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
-import { globalErrorHandler } from './middleware/globalErrorHandler.middleware.js';
+import { errorHandler } from './middleware/globalErrorHandler.middleware.js';
 import multer from 'multer'
 
 const app: Express = express();
@@ -27,10 +27,11 @@ if (env !== "development") {
   app.use(limiter);
 }
 
-import { uploadFile } from './routes/uploadSingleFile.route.js';
-import { uploadMiddleware } from './middleware/multer.middleware.js';
+import queryRoutes from './routes/query.route.js'
+app.use('/api/query',queryRoutes)
 
-app.post('/upload',uploadMiddleware.single('file') , uploadFile)
+import ragRoutes from './routes/rag.route.js'
+app.use('/api/rag', ragRoutes);
 
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
@@ -45,10 +46,10 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   res.status(500).json({ error: err.message || 'An unknown error occurred at app.ts.' })
 })
 
-app.get('/', (req: Request, res: Response) => {
+app.get('/api/health', (req: Request, res: Response) => {
   res.status(200).json({ message: 'Server is running smoothly!' });
 });
 
-app.use(globalErrorHandler)
+app.use(errorHandler)
 
 export default app;
