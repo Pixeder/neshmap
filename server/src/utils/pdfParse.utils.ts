@@ -14,7 +14,7 @@ export interface ExtractedPDF {
  * @returns An object containing the extracted text, page count, and metadata.
  */
 export const extractTextFromPDFBuffer = async (
-  buffer: string
+  buffer: Buffer
 ): Promise<ExtractedPDF> => {
 
   try {
@@ -31,7 +31,7 @@ export const extractTextFromPDFBuffer = async (
     // 2. Initialize PDF parser
     // console.log("Hello form parser")
 
-    const parser = new PDFParse({url: buffer});
+    const parser = new PDFParse({data: buffer});
 
     // 3. Extract text from PDF
 

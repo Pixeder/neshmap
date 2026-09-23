@@ -14,36 +14,20 @@ export const visionPageSchema = z.object({
     .array(z.string().trim())
     .default([]),
 
-  hasDiagram: z
-    .boolean()
-    .default(false),
-
   diagramDescription: z
     .string()
     .nullable()
     .default(null),
-
-  hasTable: z
-    .boolean()
-    .default(false),
 
   tableMarkdown: z
     .string()
     .nullable()
     .default(null),
 
-  hasFlowchart: z
-    .boolean()
-    .default(false),
-
   flowchartMermaidCode: z
     .string()
     .nullable()
     .default(null),
-
-  hasMathOrCode: z
-    .boolean()
-    .default(false),
 
   mathLatex: z
     .string()
@@ -76,4 +60,4 @@ export const visionPageSchema = z.object({
 
 export type VisionPageOutput = z.infer<
   typeof visionPageSchema
->;
+> & {pageNumber: number};
