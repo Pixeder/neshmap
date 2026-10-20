@@ -1,15 +1,33 @@
+// src/routes/document.route.ts
+
 import { Router } from 'express';
-// Adjust the import paths based on your actual folder structure
+import { uploadAndProcessPDF } from '../controllers/document.controller.js';
 import { uploadMiddleware } from '../middleware/multer.middleware.js';
-import { processPDFUpload } from '../controllers/document.controller.js';
 
 const router = Router();
 
 /**
- * POST /api/documents/upload
- * 1. uploadMiddleware: intercepts the multipart/form-data, extracts the PDF to memory, handles errors.
- * 2. processPDFUpload: runs the document through Cloudinary, parsing, chunking, and Qdrant embedding.
+ * @openapi
+ * /api/document/upload:
+ *   post:
+ *     summary: Upload PDF document for Vision OCR and Qdrant vector indexing
+ *     tags: [Document Ingestion]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required: [document]
+ *             properties:
+ *               document:
+ *                 type: string
+ *                 format: binary
+ *                 description: PDF textbook file to process
+ *     responses:
+ *       202:
+ *         description: Upload accepted and queued for background processing.
  */
-router.post('/upload', uploadMiddleware, processPDFUpload);
+router.post('/upload', uploadMiddleware, uploadAndProcessPDF);
 
 export default router;

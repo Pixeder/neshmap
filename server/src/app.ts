@@ -6,6 +6,8 @@ import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import { errorHandler } from './middleware/globalErrorHandler.middleware.js';
 import multer from 'multer'
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './config/swagger.config.js';
 
 const app: Express = express();
 const env = process.env.NODE_ENV || "development";
@@ -27,11 +29,35 @@ if (env !== "development") {
   app.use(limiter);
 }
 
-import queryRoutes from './routes/query.route.js'
-app.use('/api/query',queryRoutes)
+app.get('/api/health', (req: Request, res: Response) => {
+  res.status(200).json({ message: 'Server is running smoothly!' });
+});
 
-import ragRoutes from './routes/rag.route.js'
-app.use('/api/rag', ragRoutes);
+
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+app.get('/api/docs/json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
+
+import analyticsRoutes from './routes/analytics.route.js';
+app.use('/api/analytics', analyticsRoutes);
+
+import studentRoutes from './routes/student.route.js';
+app.use('/api/student', studentRoutes);
+
+import documentRoutes from './routes/document.route.js'
+app.use('/api/document', documentRoutes);
+
+import roadmapRoutes from './routes/roadmap.route.js';
+app.use('/api/roadmap', roadmapRoutes);
+
+import teachingRoutes from './routes/teaching.route.js';
+app.use('/api/teaching', teachingRoutes);
+
+import orchestratorRoutes from './routes/orchestrator.route.js';
+app.use('/api',orchestratorRoutes);
 
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
@@ -45,11 +71,6 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   // Handle other unexpected errors
   res.status(500).json({ error: err.message || 'An unknown error occurred at app.ts.' })
 })
-
-app.get('/api/health', (req: Request, res: Response) => {
-  res.status(200).json({ message: 'Server is running smoothly!' });
-});
-
 app.use(errorHandler)
 
 export default app;
