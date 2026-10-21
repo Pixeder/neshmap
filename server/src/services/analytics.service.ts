@@ -3,6 +3,7 @@
 import { StudentStateModel } from '../models/studentState.model.js';
 import { RoadmapModel } from '../models/roadmap.model.js';
 import { AppError } from '../utils/appError.js';
+import mongoose from 'mongoose';
 
 export interface DashboardAnalytics {
   studentId: string;
@@ -48,7 +49,9 @@ export class AnalyticsService {
     studentId: string,
     documentId: string
   ): Promise<DashboardAnalytics> {
-    const studentState = await StudentStateModel.findOne({ studentId, documentId });
+    const isValidStudentId = mongoose.Types.ObjectId.isValid(studentId);
+    const queryStudentId = isValidStudentId ? new mongoose.Types.ObjectId(studentId) : studentId;
+    const studentState = await StudentStateModel.findOne({ queryStudentId, documentId });
     const roadmap = await RoadmapModel.findOne({ documentId });
 
     if (!roadmap) {

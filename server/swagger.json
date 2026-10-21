@@ -256,6 +256,101 @@
           }
         }
       },
+      "DashboardAnalyticsResponse": {
+        "type": "object",
+        "properties": {
+          "studentId": {
+            "type": "string"
+          },
+          "documentId": {
+            "type": "string"
+          },
+          "courseTitle": {
+            "type": "string",
+            "example": "Computer Vision & Edge Detection"
+          },
+          "overallMasteryScore": {
+            "type": "number",
+            "example": 0.82
+          },
+          "courseCompletionPercentage": {
+            "type": "number",
+            "example": 65.5
+          },
+          "totalTopics": {
+            "type": "number",
+            "example": 12
+          },
+          "completedTopicsCount": {
+            "type": "number",
+            "example": 8
+          },
+          "inProgressTopicsCount": {
+            "type": "number",
+            "example": 2
+          },
+          "needsReviewTopicsCount": {
+            "type": "number",
+            "example": 2
+          },
+          "moduleProgress": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "moduleId": {
+                  "type": "string"
+                },
+                "moduleTitle": {
+                  "type": "string"
+                },
+                "completionPercentage": {
+                  "type": "number"
+                },
+                "averageMastery": {
+                  "type": "number"
+                }
+              }
+            }
+          },
+          "weaknessRadar": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "weakness": {
+                  "type": "string",
+                  "example": "Gaussian Kernel Derivatives"
+                },
+                "occurrences": {
+                  "type": "number",
+                  "example": 3
+                }
+              }
+            }
+          },
+          "knowledgeHeatmap": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "topicId": {
+                  "type": "string"
+                },
+                "topicTitle": {
+                  "type": "string"
+                },
+                "masteryScore": {
+                  "type": "number"
+                },
+                "status": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
       "ApiResponse": {
         "type": "object",
         "properties": {
@@ -518,6 +613,45 @@
         }
       }
     },
+    "/api/agent/interact": {
+      "post": {
+        "summary": "Central Tool-Calling Agentic Gateway",
+        "tags": [
+          "Agent Orchestrator"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "studentId",
+                  "documentId",
+                  "query"
+                ],
+                "properties": {
+                  "studentId": {
+                    "type": "string"
+                  },
+                  "documentId": {
+                    "type": "string"
+                  },
+                  "query": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Action executed by delegated agent tool."
+          }
+        }
+      }
+    },
     "/api/document/upload": {
       "post": {
         "summary": "Upload PDF document for Vision OCR and Qdrant vector indexing",
@@ -547,6 +681,37 @@
         "responses": {
           "202": {
             "description": "Upload accepted and queued for background processing."
+          }
+        }
+      }
+    },
+    "/api/analytics/dashboard": {
+      "get": {
+        "summary": "Retrieve student progress, heatmap metrics, and weakness radar analytics",
+        "tags": [
+          "Analytics & Progress Dashboard"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "studentId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "documentId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Full analytics payload returned for front-end charts and heatmaps."
           }
         }
       }
